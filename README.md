@@ -10,7 +10,7 @@ Reading three temperature sensors and one RTC interfaced with 2.4 inch TFT displ
     SDI (MOSI)  => D7
     SCK         => D5
     LED         => 3.3V
-    SDD         => to D6
+    SDD         => D6
     T_CLK       => D5
     T_CS        => D2
     T_DIN       => D7
