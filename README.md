@@ -16,3 +16,8 @@ Reading three temperature sensors and one RTC interfaced with 2.4 inch TFT displ
     T_DIN       => D7
     T_DO        => D6
     T_IRQ       => D1
+
+## Built With
+
+* [Dropwizard](http://nobrok.com/connecting-tft-lcd-touch-screen-with-nodemcu-esp8266/) - The web framework used
+* [ArduinoIDE](https://www.arduino.cc/en/Main/Software) - v 1.8.12
