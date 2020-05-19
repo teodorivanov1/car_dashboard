@@ -4,6 +4,7 @@ Reading three temperature sensors and one RTC interfaced with 2.4 inch TFT displ
 ## Hardware
 * NodeMCU - HW-625
 * 2.4 inch 320*240 SPI Serial TFT LCD Module Display Screen with Touch Panel Driver IC ILI9341 for MCU
+* DS18B20 - waterproof temperature sensors
 
 ## Display wiring
 
