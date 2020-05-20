@@ -1,7 +1,7 @@
 # Simple car dashboard
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-Car dashboard v1.0 can provide information from three temperature sesnors and show current date and time.
+Car dashboard v1.0 can provide information from three temperature sesnors and show the current date and time.
 # Hardware
   - DS18B20 - direct waterproof  digital temperature sensor (probe)
   - RTC-DS3231 - real time clock
