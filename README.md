@@ -42,6 +42,8 @@ http://nobrok.com/connecting-tft-lcd-touch-screen-with-nodemcu-esp8266/
 * ArduinoIDE v1.8.12
 
 # Installation
+> If a new display installed first start XPTCalibrate.ino from XPT2046/examples.
+> Then replace the calibration points for the display
 
 License
 ----
