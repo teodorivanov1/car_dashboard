@@ -35,16 +35,16 @@ Car dashboard v1.0 can provide information from three temperature sesnors and sh
     GND         <---->      GND
     DAT         <R47K>      D3
 
-> Used sources for display wiring
+> * Used sources for display wiring
 http://nobrok.com/connecting-tft-lcd-touch-screen-with-nodemcu-esp8266/
->TFT_eSPI library
+> *TFT_eSPI library
 
 # Software
 * ArduinoIDE v1.8.12
 
 # Installation
-> First start to generate the setup() calibration values, these are reported
-  to the Serial Monitor.
+> First start Touch_calibrate.ino from TFT_eSPI lib to generate the setup() calibration values, 
+> these are reported to the Serial Monitor, replace code to original setup method
 
 License
 ----
