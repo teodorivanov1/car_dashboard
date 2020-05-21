@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <SPI.h>
-
 #include "Adafruit_ILI9341esp.h"
 #include "Adafruit_GFX.h"
 #include "XPT2046.h"
@@ -9,13 +8,15 @@
 #include <Wire.h>       //I2C library
 #include <RtcDS3231.h>  //RTC library
 
+/******************************** Setup display GPIOs */
 #define TFT_DC 2
 #define TFT_CS 15
 
-/******************* Temperature Sensor => D3 (eps) */
-#define ONE_WIRE_BUS D3
+/******************************** Setup display lib instances */
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
+XPT2046 touch(/*cs=*/ 4, /*irq=*/ 5);
 
-/******************* UI details */
+/******************************** UI details */
 #define BUTTON_X 40
 #define BUTTON_Y 20
 #define BUTTON_W 60
@@ -37,20 +38,10 @@
 char textfield[TEXT_LEN + 1] = "";
 uint8_t textfield_i = 0;
 
-// Setup a oneWire instance to communicate with any OneWire devices
-//OneWire oneWire(ONE_WIRE_BUS);
+/******************************** Setup a oneWire instance to communicate with any thermometers */
 OneWire  ds(D3);
-// Pass our oneWire reference to Dallas Temperature.
-//DallasTemperature sensors(&oneWire);
-// variable to hold device addresses
-DeviceAddress Thermometer;
-int deviceCount = 0;
 float tempSensor1;
-uint8_t sensor1[8] = { 0x28, 0x14, 0x3F, 0x79, 0x97, 0x19, 0x03, 0xA7  };
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
-XPT2046 touch(/*cs=*/ 4, /*irq=*/ 5);
-//RtcDS3231 rtcObject; 
-//RtcDS3231<TwoWire> rtcObject(Wire); //Uncomment
+uint8_t sensor1[8] = { 0x28, 0x14, 0x3F, 0x79, 0x97, 0x19, 0x03, 0xA7  }; // address for device 1
 RtcDS3231<TwoWire> Rtc(Wire);
 
 /* create 15 buttons, in classic candybar phone style */
@@ -66,22 +57,19 @@ Adafruit_GFX_Button buttons[15];
 void setup() {
   // put your setup code here, to run once:
   delay(1000);
-  /*           UART            */
+  /*           serial communtication start          */
   Wire.begin(10, 9);
   Serial.begin(115200);
   SPI.setFrequency(ESP_SPI_FREQ);
-  // Start reading from D3
-//  sensors.begin();
   delay(1000);
   /*           RTC             */
   RTCSetup();
   /*           TFT             */
   tft.begin();
   touch.begin(tft.width(), tft.height());  // Must be done before setting rotation
-  Serial.print("tftx ="); Serial.print(tft.width()); Serial.print(" tfty ="); Serial.println(tft.height());
   tft.fillScreen(ILI9341_BLACK);
   tft.setRotation(3);
-  // Replace these for your screen module
+  // Replace these for your screen module from calibration sketch
   touch.setCalibration(1864, 1792, 280, 251);
 //  // locate devices on the bus
 //  Serial.println("Locating devices...");
@@ -100,7 +88,6 @@ void setup() {
 //    sensors.getAddress(Thermometer, i);
 //    printAddress(Thermometer);
 //  }
-  // createNumpad();
 
   // create 'text field'
   //tft.drawRect(TEXT_X, TEXT_Y, TEXT_W, TEXT_H, ILI9341_WHITE);
@@ -130,21 +117,14 @@ void printDateTime(const RtcDateTime& dt)
 }
 
 void RTCSetup(){
-  Serial.print("compiled: ");
-    Serial.print(__DATE__);
-    Serial.println(__TIME__);
-
     //--------RTC SETUP ------------
     // if you are using ESP-01 then uncomment the line below to reset the pins to
     // the available pins for SDA, SCL
     Wire.begin(3, 1); 
-    
     Rtc.Begin(); 
-
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
     printDateTime(compiled);
     Serial.println();
-
     if (!Rtc.IsDateTimeValid()) 
     {
         if (Rtc.LastError() != 0)
@@ -339,18 +319,6 @@ void loop() {
   // put your main code here, to run repeatedly:
   uint16_t x, y;
 
-//  RtcDateTime currentTime = rtcObject.GetDateTime();    //get the time from the RTC
-//  char str[20];   //declare a string as an array of chars
-//  sprintf(str, "%d/%d/%d %d:%d:%d",     //%d allows to print an integer to the string
-//          currentTime.Year(),   //get year method
-//          currentTime.Month(),  //get month method
-//          currentTime.Day(),    //get day method
-//          currentTime.Hour(),   //get hour method
-//          currentTime.Minute(), //get minute method
-//          currentTime.Second()  //get second method
-//         );
-//  Serial.println(str); //print the string to the serial port
-
   printTime();
   tft.setCursor(30, 90);
   tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
@@ -362,8 +330,6 @@ void loop() {
 
     delay(10);
   }
-//  tempSensor1 = sensors.getTempC(sensor1); // Gets the values of the temperature
-//  Serial.print("Temperature sensor 1: ");  Serial.println(tempSensor1);
   if (touch.isTouching())
     touch.getPosition(x, y);
 
@@ -401,11 +367,11 @@ void loop() {
       // clr button! delete char
       if (b == 1) {
 
-        textfield[textfield_i] = 0;
-        if (textfield > 0) {
-          textfield_i--;
-          textfield[textfield_i] = ' ';
-        }
+//        textfield[textfield_i] = 0;
+//        if (textfield > 0) {
+//          textfield_i--;
+//          textfield[textfield_i] = ' ';
+//        }
       }
 
       // update the current text field
