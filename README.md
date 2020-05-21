@@ -37,7 +37,7 @@ Car dashboard v1.0 can provide information from three temperature sesnors and sh
 
 > * Used sources for display wiring
 http://nobrok.com/connecting-tft-lcd-touch-screen-with-nodemcu-esp8266/
-> *TFT_eSPI library
+> TFT_eSPI library
 
 # Software
 * ArduinoIDE v1.8.12
