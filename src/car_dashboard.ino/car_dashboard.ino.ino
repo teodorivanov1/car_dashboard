@@ -95,7 +95,7 @@ void setup() {
   tft.init();
 
   // Set the rotation before we calibrate
-  tft.setRotation(0);
+  tft.setRotation(1);
 
   // Calibrate the touch screen and retrieve the scaling factors
   touch_calibrate();
@@ -114,96 +114,96 @@ void setup() {
   drawKeypad();
 
   // Initialize RTC
-  // RTCSetup();
+   //RTCSetup();
 }
 
 //------------------------------------------------------------------------------------------
 
 void loop(void) {
-
-//  tft.setCursor(30, 90);
-//  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
-//  float t = printTemperature();
-//  if(t > -1000) {
-//    tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK);
-//    tft.setTextSize(6);
-//    tft.print(t);
-//
-//    delay(10);
-//  }
+  //printTime();
   
-  uint16_t t_x = 0, t_y = 0; // To store the touch coordinates
+ tft.setCursor(30, 90);
+ tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
+ float t = printTemperature();
+ if(t > -1000) {
+   tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK);
+   tft.setTextSize(6);
+   tft.print(t);
 
-  // Pressed will be set true is there is a valid touch on the screen
-  boolean pressed = tft.getTouch(&t_x, &t_y);
+   delay(10);
+ }
+  
+ uint16_t t_x = 0, t_y = 0; // To store the touch coordinates
 
-  // / Check if any key coordinate boxes contain the touch coordinates
-  for (uint8_t b = 0; b < 15; b++) {
-    if (pressed && key[b].contains(t_x, t_y)) {
-      key[b].press(true);  // tell the button it is pressed
-    } else {
-      key[b].press(false);  // tell the button it is NOT pressed
-    }
-  }
+ // Pressed will be set true is there is a valid touch on the screen
+ boolean pressed = tft.getTouch(&t_x, &t_y);
 
-  // Check if any key has changed state
-  for (uint8_t b = 0; b < 15; b++) {
+ // / Check if any key coordinate boxes contain the touch coordinates
+ for (uint8_t b = 0; b < 15; b++) {
+   if (pressed && key[b].contains(t_x, t_y)) {
+     key[b].press(true);  // tell the button it is pressed
+   } else {
+     key[b].press(false);  // tell the button it is NOT pressed
+   }
+ }
 
-    if (b < 3) tft.setFreeFont(LABEL1_FONT);
-    else tft.setFreeFont(LABEL2_FONT);
+ // Check if any key has changed state
+ for (uint8_t b = 0; b < 15; b++) {
 
-    if (key[b].justReleased()) key[b].drawButton();     // draw normal
+   if (b < 3) tft.setFreeFont(LABEL1_FONT);
+   else tft.setFreeFont(LABEL2_FONT);
 
-    if (key[b].justPressed()) {
-      key[b].drawButton(true);  // draw invert
+   if (key[b].justReleased()) key[b].drawButton();     // draw normal
 
-      // if a numberpad button, append the relevant # to the numberBuffer
-      if (b >= 3) {
-        if (numberIndex < NUM_LEN) {
-          numberBuffer[numberIndex] = keyLabel[b][0];
-          numberIndex++;
-          numberBuffer[numberIndex] = 0; // zero terminate
-        }
-        status(""); // Clear the old status
-      }
+   if (key[b].justPressed()) {
+     key[b].drawButton(true);  // draw invert
 
-      // Del button, so delete last char
-      if (b == 1) {
-        numberBuffer[numberIndex] = 0;
-        if (numberIndex > 0) {
-          numberIndex--;
-          numberBuffer[numberIndex] = 0;//' ';
-        }
-        status(""); // Clear the old status
-      }
+     // if a numberpad button, append the relevant # to the numberBuffer
+     if (b >= 3) {
+       if (numberIndex < NUM_LEN) {
+         numberBuffer[numberIndex] = keyLabel[b][0];
+         numberIndex++;
+         numberBuffer[numberIndex] = 0; // zero terminate
+       }
+       status(""); // Clear the old status
+     }
 
-      if (b == 2) {
-        status("Sent value to serial port");
-        Serial.println(numberBuffer);
-      }
-      // we dont really check that the text field makes sense
-      // just try to call
-      if (b == 0) {
-        status("Value cleared");
-        numberIndex = 0; // Reset index to 0
-        numberBuffer[numberIndex] = 0; // Place null in buffer
-      }
+     // Del button, so delete last char
+     if (b == 1) {
+       numberBuffer[numberIndex] = 0;
+       if (numberIndex > 0) {
+         numberIndex--;
+         numberBuffer[numberIndex] = 0;//' ';
+       }
+       status(""); // Clear the old status
+     }
 
-      // Update the number display field
-      tft.setTextDatum(TL_DATUM);        // Use top left corner as text coord datum
-      tft.setFreeFont(&FreeSans18pt7b);  // Choose a nicefont that fits box
-      tft.setTextColor(DISP_TCOLOR);     // Set the font colour
+     if (b == 2) {
+       status("Sent value to serial port");
+       Serial.println(numberBuffer);
+     }
+     // we dont really check that the text field makes sense
+     // just try to call
+     if (b == 0) {
+       status("Value cleared");
+       numberIndex = 0; // Reset index to 0
+       numberBuffer[numberIndex] = 0; // Place null in buffer
+     }
 
-      // Draw the string, the value returned is the width in pixels
-      int xwidth = tft.drawString(numberBuffer, DISP_X + 4, DISP_Y + 12);
+     // Update the number display field
+     tft.setTextDatum(TL_DATUM);        // Use top left corner as text coord datum
+     tft.setFreeFont(&FreeSans18pt7b);  // Choose a nicefont that fits box
+     tft.setTextColor(DISP_TCOLOR);     // Set the font colour
 
-      // Now cover up the rest of the line up by drawing a black rectangle.  No flicker this way
-      // but it will not work with italic or oblique fonts due to character overlap.
-      tft.fillRect(DISP_X + 4 + xwidth, DISP_Y + 1, DISP_W - xwidth - 5, DISP_H - 2, TFT_BLACK);
+     // Draw the string, the value returned is the width in pixels
+     int xwidth = tft.drawString(numberBuffer, DISP_X + 4, DISP_Y + 12);
 
-      delay(10); // UI debouncing
-    }
-  }
+     // Now cover up the rest of the line up by drawing a black rectangle.  No flicker this way
+     // but it will not work with italic or oblique fonts due to character overlap.
+     tft.fillRect(DISP_X + 4 + xwidth, DISP_Y + 1, DISP_W - xwidth - 5, DISP_H - 2, TFT_BLACK);
+     delay(10); // UI debouncing
+   }
+ }
 }
 
 //------------------------------------------------------------------------------------------
@@ -321,55 +321,56 @@ void RTCSetup(){
     // the available pins for SDA, SCL
     Wire.begin(3, 1); 
     Rtc.Begin(); 
-    RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-    printDateTime(compiled);
-    Serial.println();
-    if (!Rtc.IsDateTimeValid()) 
-    {
-        if (Rtc.LastError() != 0)
-        {
-            // we have a communications error
-            // see https://www.arduino.cc/en/Reference/WireEndTransmission for 
-            // what the number means
-            Serial.print("RTC communications error = ");
-            Serial.println(Rtc.LastError());
-        }
-        else
-        {
-            // Common Causes:
-            //    1) first time you ran and the device wasn't running yet
-            //    2) the battery on the device is low or even missing
-
-            Serial.println("RTC lost confidence in the DateTime!");
-
-            // following line sets the RTC to the date & time this sketch was compiled
-            // it will also reset the valid flag internally unless the Rtc device is
-            // having an issue
-
-            Rtc.SetDateTime(compiled);
-        }
-    }
-
-    if (!Rtc.GetIsRunning())
-    {
-        Serial.println("RTC was not actively running, starting now");
-        Rtc.SetIsRunning(true);
-    }
-
-    RtcDateTime now = Rtc.GetDateTime();
-    if (now < compiled) 
-    {
-        Serial.println("RTC is older than compile time!  (Updating DateTime)");
-        Rtc.SetDateTime(compiled);
-    }
-    else if (now > compiled) 
-    {
-        Serial.println("RTC is newer than compile time. (this is expected)");
-    }
-    else if (now == compiled) 
-    {
-        Serial.println("RTC is the same as compile time! (not expected but all is fine)");
-    }
+//    RtcDateTime compiled = RtcDateTime("Jan 25 2017", "16:30:00");
+//    Rtc.SetDateTime(compiled);
+//    printDateTime(compiled);
+//    Serial.println();
+//    if (!Rtc.IsDateTimeValid()) 
+//    {
+//        if (Rtc.LastError() != 0)
+//        {
+//            // we have a communications error
+//            // see https://www.arduino.cc/en/Reference/WireEndTransmission for 
+//            // what the number means
+//            Serial.print("RTC communications error = ");
+//            Serial.println(Rtc.LastError());
+//        }
+//        else
+//        {
+//            // Common Causes:
+//            //    1) first time you ran and the device wasn't running yet
+//            //    2) the battery on the device is low or even missing
+//
+//            Serial.println("RTC lost confidence in the DateTime!");
+//
+//            // following line sets the RTC to the date & time this sketch was compiled
+//            // it will also reset the valid flag internally unless the Rtc device is
+//            // having an issue
+//
+//            Rtc.SetDateTime(compiled);
+//        }
+//    }
+//
+//    if (!Rtc.GetIsRunning())
+//    {
+//        Serial.println("RTC was not actively running, starting now");
+//        Rtc.SetIsRunning(true);
+//    }
+//
+//    RtcDateTime now = Rtc.GetDateTime();
+//    if (now < compiled) 
+//    {
+//        Serial.println("RTC is older than compile time!  (Updating DateTime)");
+//        Rtc.SetDateTime(compiled);
+//    }
+//    else if (now > compiled) 
+//    {
+//        Serial.println("RTC is newer than compile time. (this is expected)");
+//    }
+//    else if (now == compiled) 
+//    {
+//        Serial.println("RTC is the same as compile time! (not expected but all is fine)");
+//    }
 
     // never assume the Rtc was last configured by you, so
     // just clear them to your needed state
